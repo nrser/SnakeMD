@@ -8,20 +8,21 @@ from enum import Enum, auto
 from typing import Iterable, Union
 from urllib import request
 from urllib.error import HTTPError
+from textwrap import indent
 
 logger = logging.getLogger(__name__)
 
 
-class Verification():
+class Verification:
     """
     Verification is a helper object for storing errors generated
     when creating a markdown document. This object is largely used
-    internally to verify the contents of a document, but can be 
-    accessed through the various verify() methods throughout the 
-    library by the user. A convenience method is provided in Document 
+    internally to verify the contents of a document, but can be
+    accessed through the various verify() methods throughout the
+    library by the user. A convenience method is provided in Document
     for listing all of the errors. Otherwise, a handful of methods
     are available here for interacting with the Verification object
-    directly. 
+    directly.
 
     .. versionadded:: 0.2.0
     """
@@ -33,7 +34,8 @@ class Verification():
         output = []
         for error in self._errors:
             output.append(
-                f"- {type(error[0]).__name__}: {error[1]}\n{error[0]}\n")
+                f"- {type(error[0]).__name__}: {error[1]}\n{error[0]}\n"
+            )
         return "\n".join(output)
 
     def add_error(self, violator: object, error: str) -> None:
@@ -50,7 +52,7 @@ class Verification():
         """
         Absorbs an existing verification object in self. This is
         helpful when you have many verification objects that you'd
-        like to aggregate. 
+        like to aggregate.
 
         :param Verification verification: the verification object to absorb
         """
@@ -70,13 +72,13 @@ class InlineText:
     """
     The basic unit of text in markdown. All components which contain
     text are built using this class instead of strings directly. That
-    way, those elements capture all styling information. 
+    way, those elements capture all styling information.
 
     :param str text: the inline text to render
     :param str url: the link associated with the inline text
-    :param bool bold: the bold state of the inline text; 
+    :param bool bold: the bold state of the inline text;
         set to True to render bold inline text (i.e., True -> **bold**)
-    :param bool italics: the italics state of the inline text; 
+    :param bool italics: the italics state of the inline text;
         set to True to render inline text in italics (i.e., True -> *italics*)
     :param bool code: the italics state of the inline text;
         set to True to render inline text as code (i.e., True -> `code`)
@@ -92,7 +94,7 @@ class InlineText:
         bold: bool = False,
         italics: bool = False,
         code: bool = False,
-        image: bool = False
+        image: bool = False,
     ) -> None:
         self._text = text
         self._bold = bold
@@ -108,7 +110,7 @@ class InlineText:
         """
         Renders self as a string. In this case,
         inline text can represent many different types of data from
-        stylized text to inline code to links and images. 
+        stylized text to inline code to links and images.
 
         :return: the InlineText object as a string
         """
@@ -133,7 +135,7 @@ class InlineText:
         """
         try:
             req = request.Request(self._url)
-            req.get_method = lambda: 'HEAD'
+            req.get_method = lambda: "HEAD"
             request.urlopen(req)
             logger.info(f"URL passed verification: {self._url}")
             return True
@@ -159,7 +161,7 @@ class InlineText:
     def is_text(self) -> bool:
         """
         Checks if this InlineText is a text-only element. If not, it must
-        be an image, a URL, or an inline code snippet. 
+        be an image, a URL, or an inline code snippet.
 
         .. versionadded:: 0.2.0
 
@@ -177,7 +179,7 @@ class InlineText:
 
     def bold(self) -> InlineText:
         """
-        Adds bold styling to self. 
+        Adds bold styling to self.
 
         .. versionchanged:: 0.7.0
             Modified to return previous bold state
@@ -189,7 +191,7 @@ class InlineText:
 
     def unbold(self) -> InlineText:
         """
-        Removes bold styling from self. 
+        Removes bold styling from self.
 
         .. versionchanged:: 0.7.0
             Modified to return previous bold state
@@ -212,7 +214,7 @@ class InlineText:
 
     def unitalicize(self) -> InlineText:
         """
-        Removes italics styling from self. 
+        Removes italics styling from self.
 
         .. versionadded:: 0.7.0
 
@@ -268,8 +270,8 @@ class InlineText:
 
     def reset(self) -> InlineText:
         """
-        Removes all settings from self (e.g., bold, code, italics, url, etc.). 
-        All that will remain is the text itself. 
+        Removes all settings from self (e.g., bold, code, italics, url, etc.).
+        All that will remain is the text itself.
 
         .. versionadded:: 0.7.0
 
@@ -284,55 +286,75 @@ class InlineText:
 
 
 class CheckBox(InlineText):
-        """
-        A checkable box, based of InlineText.
-        Supports all formats available via InlineText (eg. url, bold, italics, etc.) 
+    """
+    A checkable box, based of InlineText.
+    Supports all formats available via InlineText (eg. url, bold, italics, etc.)
+        Supports all formats available via InlineText (eg. url, bold, italics, etc.)
+    Supports all formats available via InlineText (eg. url, bold, italics, etc.)
+        Supports all formats available via InlineText (eg. url, bold, italics, etc.)
+    Supports all formats available via InlineText (eg. url, bold, italics, etc.)
+        Supports all formats available via InlineText (eg. url, bold, italics, etc.)
+    Supports all formats available via InlineText (eg. url, bold, italics, etc.)
+        Supports all formats available via InlineText (eg. url, bold, italics, etc.)
+    Supports all formats available via InlineText (eg. url, bold, italics, etc.)
 
-        :param str text: the inline text to render
-        :param str url: the link associated with the inline text
-        :param bool bold: the bold state of the inline text; 
-            set to True to render bold inline text (i.e., True -> **bold**)
-        :param bool italics: the italics state of the inline text; 
-            set to True to render inline text in italics (i.e., True -> *italics*)
-        :param bool code: the italics state of the inline text;
-            set to True to render inline text as code (i.e., True -> `code`)
-        :param bool image: the image state of the inline text;
-            set to True to render inline text as an image;
-            must include url parameter to render
-        :param bool checked: the checkbox state, checked or not;
-            set to True to render checkbox as checked
-        """
-        def __init__(
-            self,
-            text: str,
-            url: str = None,
-            bold: bool = False,
-            italics: bool = False,
-            code: bool = False,
-            image: bool = False,
-            checked: bool = False
-        ) -> None:
-            super().__init__(
-                    text,
-                    url = url,
-                    bold = bold,
-                    italics = italics,
-                    code = code,
-                    image = image
-                    )
-            self.checked = checked
+    :param str text: the inline text to render
+    :param str url: the link associated with the inline text
+    :param bool bold: the bold state of the inline text;
+        :param bool bold: the bold state of the inline text;
+    :param bool bold: the bold state of the inline text;
+        :param bool bold: the bold state of the inline text;
+    :param bool bold: the bold state of the inline text;
+        :param bool bold: the bold state of the inline text;
+    :param bool bold: the bold state of the inline text;
+        :param bool bold: the bold state of the inline text;
+    :param bool bold: the bold state of the inline text;
+        set to True to render bold inline text (i.e., True -> **bold**)
+    :param bool italics: the italics state of the inline text;
+        :param bool italics: the italics state of the inline text;
+    :param bool italics: the italics state of the inline text;
+        :param bool italics: the italics state of the inline text;
+    :param bool italics: the italics state of the inline text;
+        :param bool italics: the italics state of the inline text;
+    :param bool italics: the italics state of the inline text;
+        :param bool italics: the italics state of the inline text;
+    :param bool italics: the italics state of the inline text;
+        set to True to render inline text in italics (i.e., True -> *italics*)
+    :param bool code: the italics state of the inline text;
+        set to True to render inline text as code (i.e., True -> `code`)
+    :param bool image: the image state of the inline text;
+        set to True to render inline text as an image;
+        must include url parameter to render
+    :param bool checked: the checkbox state, checked or not;
+        set to True to render checkbox as checked
+    """
 
-        def render(self) -> str:
-            text = super().render()
-            checked_str = "X" if self.checked else " "
-            return f"[{checked_str}] {text}"
+    def __init__(
+        self,
+        text: str,
+        url: str = None,
+        bold: bool = False,
+        italics: bool = False,
+        code: bool = False,
+        image: bool = False,
+        checked: bool = False,
+    ) -> None:
+        super().__init__(
+            text, url=url, bold=bold, italics=italics, code=code, image=image
+        )
+        self.checked = checked
+
+    def render(self) -> str:
+        text = super().render()
+        checked_str = "X" if self.checked else " "
+        return f"[{checked_str}] {text}"
 
 
 class Element:
     """
-    An element is defined as a standalone section of a markdown file. 
+    An element is defined as a standalone section of a markdown file.
     All elements are to be surrounded by empty lines. Examples of elements
-    include paragraphs, headers, tables, and lists. 
+    include paragraphs, headers, tables, and lists.
     """
 
     def __init__(self):
@@ -345,7 +367,7 @@ class Element:
         """
         Renders the element as a markdown string.
         This function is called by __str__ for all classes
-        which inherit Element. 
+        which inherit Element.
 
         :raises NotImplementedError: interface method never to be implemented
         :return: the element as a markdown string
@@ -366,7 +388,7 @@ class HorizontalRule(Element):
     """
     A horizontal rule is a line separating different sections of
     a document. Horizontal rules really only come in one form,
-    so there are no settings to adjust. 
+    so there are no settings to adjust.
 
     .. versionadded:: 0.2.0
     """
@@ -401,7 +423,7 @@ class HorizontalRule(Element):
 class Header(Element):
     """
     A header is a text element which serves as the title for a new
-    section of a document. Headers come in six main sizes which 
+    section of a document. Headers come in six main sizes which
     correspond to the six headers sizes in HTML (e.g., <h1>).
 
     :param Union[InlineText, str] text: the header text
@@ -442,7 +464,7 @@ class Header(Element):
     def render(self) -> str:
         """
         Renders the header in markdown according to
-        the level provided. 
+        the level provided.
 
         :return: the header as a markdown string
         """
@@ -485,22 +507,32 @@ class Paragraph(Element):
     .. versionchanged:: 0.4.0
         Expanded constructor to accept strings directly
 
-    :param Iterable[Union[InlineText, str]] content: a "list" of text objects to render as a paragraph 
+    :param Iterable[Union[InlineText, str]] content: a "list" of text objects to render as a paragraph
     :param bool code: the code state of the paragraph;
         set True to convert the paragraph to a code block (i.e., True -> ```code```)
     :param str lang: the language of the code snippet;
         invalid without the code flag set to True
     :param bool quote: the quote state of the paragraph;
         set True to convert the paragraph to a blockquote (i.e., True -> > quote)
+    :param bool indented_code: Use the "indented" style (four spaces) for this
+        code block.
     """
 
-    def __init__(self, content: Iterable[Union[InlineText | str]], code: bool = False, lang: str = "generic", quote: bool = False):
+    def __init__(
+        self,
+        content: Iterable[Union[InlineText, str]],
+        code: bool = False,
+        lang: str = "generic",
+        quote: bool = False,
+        indented_code: bool = False,
+    ):
         super().__init__()
         self._content: list[InlineText] = self._process_content(content)
         self._code = code
         self._lang = lang
         self._quote = quote
         self._backticks = 3
+        self._indented_code = indented_code
 
     @staticmethod
     def _process_content(content) -> None:
@@ -517,7 +549,7 @@ class Paragraph(Element):
         Renders the paragraph as markdown according to the settings provided.
         For example, if the code flag is enabled, the paragraph will be
         rendered as a code block. If both flags are enabled, code takes
-        precedence. 
+        precedence.
 
         .. versionchanged:: 0.4.0
             No longer assumes spaces between InlineText items
@@ -525,10 +557,13 @@ class Paragraph(Element):
         :return: the paragraph as a markdown string
         """
         # TODO: add support for nested code blocks
-        paragraph = ''.join(str(item) for item in self._content)
+        paragraph = "".join(str(item) for item in self._content)
         if self._code:
-            ticks = '`' * self._backticks
-            return f"{ticks}{self._lang}\n{paragraph}\n{ticks}"
+            if self._indented_code:
+                return indent(paragraph, "    ")
+            else:
+                ticks = "`" * self._backticks
+                return f"{ticks}{self._lang}\n{paragraph}\n{ticks}"
         elif self._quote:
             return f"> {paragraph}"
         else:
@@ -536,7 +571,7 @@ class Paragraph(Element):
 
     def verify(self) -> Verification:
         """
-        Verifies that the Paragraph is valid. 
+        Verifies that the Paragraph is valid.
 
         .. versionadded:: 0.2.0
 
@@ -547,7 +582,8 @@ class Paragraph(Element):
         # Paragraph errors
         if self._code and self._quote:
             verification.add_error(
-                self, "Both code and quote are active. Choose one. ")
+                self, "Both code and quote are active. Choose one. "
+            )
 
         # InlineText errors
         for text in self._content:
@@ -571,7 +607,7 @@ class Paragraph(Element):
     def is_text(self) -> bool:
         """
         Checks if this Paragraph is a text-only element. If not, it must
-        be a quote or code block. 
+        be a quote or code block.
 
         .. versionadded:: 0.3.0
 
@@ -579,18 +615,20 @@ class Paragraph(Element):
         """
         return not (self._code or self._quote)
 
-    def _replace_any(self, target: str, text: InlineText, count: int = -1) -> Paragraph:
+    def _replace_any(
+        self, target: str, text: InlineText, count: int = -1
+    ) -> Paragraph:
         """
         Given a target string, this helper method replaces it with the specified
         InlineText object. This method was created because insert_link and
         replace were literally one line different. This method serves as the
         mediator. Note that using this method will introduce several new
-        underlying InlineText objects even if they could be aggregated. 
+        underlying InlineText objects even if they could be aggregated.
         At some point, we may just expose this method because it seems handy.
         For example, I foresee a need for a function where all the person wants
-        to do is add italics for every instance of a particular string. 
+        to do is add italics for every instance of a particular string.
         Though, I suppose we could include all of that in the default replace
-        method. 
+        method.
 
         :param str target: the target string to replace
         :param InlineText text: the InlineText object to insert in place of the target
@@ -600,7 +638,10 @@ class Paragraph(Element):
         i = 0
         content = []
         for inline_text in self._content:
-            if inline_text.is_text() and len(items := inline_text._text.split(target)) > 1:
+            if (
+                inline_text.is_text()
+                and len(items := inline_text._text.split(target)) > 1
+            ):
                 for item in items:
                     content.append(InlineText(item))
                     if count == -1 or i < count:
@@ -614,12 +655,14 @@ class Paragraph(Element):
         self._content = content
         return self
 
-    def replace(self, target: str, replacement: str, count: int = -1) -> Paragraph:
+    def replace(
+        self, target: str, replacement: str, count: int = -1
+    ) -> Paragraph:
         """
         A convenience method which replaces a target string with a string of
         the users choice. Like insert_link, this method is modeled after
         :code:`str.replace()` of the standard library. As a result, a count
-        can be provided to limit the number of strings replaced in the paragraph. 
+        can be provided to limit the number of strings replaced in the paragraph.
 
         .. versionadded:: 0.5.0
 
@@ -637,7 +680,7 @@ class Paragraph(Element):
         is modeled after :code:`str.replace()`, so a count can be
         provided to limit the number of insertions. This method
         will not replace links of text that have already been linked.
-        See replace_link() for that behavior. 
+        See replace_link() for that behavior.
 
         .. code-block:: Python
 
@@ -645,7 +688,7 @@ class Paragraph(Element):
 
         .. versionadded:: 0.2.0
         .. versionchanged:: 0.5.0
-            Changed function to insert links at all instances of target 
+            Changed function to insert links at all instances of target
             rather than just the first instance
 
         :param str target: the string to link
@@ -662,7 +705,7 @@ class Paragraph(Element):
         modeled after :code:`str.replace()`, so a count can be provided to limit
         the number of links replaced in the paragraph. This method is useful
         if you want to replace existing URLs but don't necessarily care what
-        the anchor text is. 
+        the anchor text is.
 
         .. versionadded:: 0.7.0
 
@@ -682,7 +725,7 @@ class Paragraph(Element):
         """
         Verifies all URLs in the paragraph. Results are
         returned in a dictionary where the URLs are
-        mapped to their validity. 
+        mapped to their validity.
 
         :return: a dictionary of URLs mapped to their validity
         """
@@ -699,13 +742,17 @@ class MDList(Element):
     .. versionchanged:: 0.4.0
         Expanded constructor to accept strings directly
 
-    :param Iterable[Union[str, InlineText, Paragraph, MDList]] items: 
+    :param Iterable[Union[str, InlineText, Paragraph, MDList]] items:
         a "list" of objects to be rendered as a list
     :param bool ordered: the ordered state of the list;
         set to True to render an ordered list (i.e., True -> 1. item)
     """
 
-    def __init__(self, items: Iterable[Union[str, InlineText, Paragraph, MDList]], ordered: bool = False) -> None:
+    def __init__(
+        self,
+        items: Iterable[Union[str, InlineText, Paragraph, MDList]],
+        ordered: bool = False,
+    ) -> None:
         super().__init__()
         self._items: Union[MDList, Paragraph] = self._process_items(items)
         self._ordered = ordered
@@ -732,7 +779,7 @@ class MDList(Element):
         """
         Returns the number of spaces that any sublists should be indented.
 
-        :param int item_index: the index of the item to check (only used for ordered lists); 
+        :param int item_index: the index of the item to check (only used for ordered lists);
             defaults to -1
         :return: the number of spaces
         """
@@ -746,7 +793,7 @@ class MDList(Element):
         """
         Renders the markdown list according to the settings provided.
         For example, if the the ordered flag is set, an ordered list
-        will be rendered in markdown. 
+        will be rendered in markdown.
 
         :return: the list as a markdown string
         """
@@ -768,7 +815,7 @@ class MDList(Element):
         """
         Verifies that the markdown list is valid. Mainly, this checks the validity
         of the containing InlineText items. The MDList class has no way to
-        instantiate it incorrectly, beyond providing the wrong data types. 
+        instantiate it incorrectly, beyond providing the wrong data types.
 
         .. versionadded:: 0.2.0
 
@@ -785,23 +832,28 @@ class MDList(Element):
 class MDCheckList(MDList):
     """
     A markdown CheckBox list has boxes that can be clicked.
-    
+
     .. versionadded:: 0.10.0
 
-    :param Iterable[Union[str, InlineText, Paragraph, MDList]] items: 
+    :param Iterable[Union[str, InlineText, Paragraph, MDList]] items:
         a "list" of objects to be rendered as a Checkbox list
     :param bool checked: the state of the checkbox;
         set to True to render a checked box (i.e., True -> - [x] item)
     """
-    def __init__(self,  items: Iterable[Union[str, InlineText, Paragraph, MDList]], checked: bool=False) -> None:
+
+    def __init__(
+        self,
+        items: Iterable[Union[str, InlineText, Paragraph, MDList]],
+        checked: bool = False,
+    ) -> None:
         super().__init__(items, False)
         self.checked = checked
-    
+
     def render(self) -> str:
         """
         Renders the markdown Check Box list according to the settings provided.
         For example, if the the checked flag is set, a checked list
-        will be rendered in markdown. 
+        will be rendered in markdown.
 
         :return: the list as a markdown string
         """
@@ -816,22 +868,22 @@ class MDCheckList(MDList):
                 output.append(f"{self._space}- [{checked_str}] {item}")
 
         return "\n".join(output)
-    
+
 
 class TableOfContents(Element):
     """
     A Table of Contents is an element containing an ordered list
-    of all the `<h2>` headers in the document by default. A range can be 
-    specified to customize which headers (e.g., `<h3>`) are included in 
-    the table of contents. This element can be placed anywhere in the document. 
+    of all the `<h2>` headers in the document by default. A range can be
+    specified to customize which headers (e.g., `<h3>`) are included in
+    the table of contents. This element can be placed anywhere in the document.
 
     .. versionadded:: 0.2.0
 
     .. versionchanged:: 0.8.0
        Added optional levels parameter
 
-    :param Document doc: a reference to the document containing this table of contents 
-    :param list[int] levels: a range of integers representing the sequence of header levels 
+    :param Document doc: a reference to the document containing this table of contents
+    :param list[int] levels: a range of integers representing the sequence of header levels
         to include in the table of contents; defaults to range(2, 3)
     """
 
@@ -852,9 +904,11 @@ class TableOfContents(Element):
             if isinstance(header, Header) and header._level in self._levels
         ]
 
-    def _assemble_table_of_contents(self, headers: Iterable, position: int) -> tuple(MDList, int):
+    def _assemble_table_of_contents(
+        self, headers: Iterable, position: int
+    ) -> tuple(MDList, int):
         """
-        Assembles the table of contents from the headers in the document. 
+        Assembles the table of contents from the headers in the document.
 
         :return: a list of strings representing the table of contents
         """
@@ -868,7 +922,7 @@ class TableOfContents(Element):
             if headers[i]._level == level:
                 line = InlineText(
                     headers[i]._text._text,
-                    url=f"#{'-'.join(headers[i]._text._text.lower().split())}"
+                    url=f"#{'-'.join(headers[i]._text._text.lower().split())}",
                 )
                 table_of_contents.append(line)
                 i += 1
@@ -891,7 +945,7 @@ class TableOfContents(Element):
     def verify(self) -> Verification:
         """
         A Table of Contents is generated through a circular reference
-        to the Document it contains. There is no way to instantiate 
+        to the Document it contains. There is no way to instantiate
         this incorrectly.
 
         .. versionadded:: 0.2.0
@@ -904,41 +958,45 @@ class TableOfContents(Element):
 class Table(Element):
     """
     A table is a standalone element of rows and columns. Data is rendered
-    according to underlying InlineText items. 
+    according to underlying InlineText items.
 
     .. versionchanged:: 0.4.0
         Added optional alignment parameter and expanded constructor to accept strings
 
     :param header: the header row of labels
     :param body: the collection of rows of data
-    :param align: the column alignment 
+    :param align: the column alignment
     """
 
     def __init__(
         self,
         header: Iterable[Union[str, InlineText, Paragraph]],
         body: Iterable[Iterable[Union[str, InlineText, Paragraph]]],
-        align: Iterable[Align] = None
+        align: Iterable[Align] = None,
     ) -> None:
         logger.debug(f"Initializing table\n{(header, body, align)}")
         super().__init__()
         self._header, self._body, self._widths = self._process_table(
-            header, body)
+            header, body
+        )
         self._align = align
 
     class Align(Enum):
         """
         Align is an enum only used by the Table class to specify the alignment
-        of various columns in the table. 
+        of various columns in the table.
 
         .. versionadded:: 0.4.0
         """
+
         LEFT = auto()
         RIGHT = auto()
         CENTER = auto()
 
     @staticmethod
-    def _process_table(header, body) -> tuple(list[Paragraph], list[list[Paragraph]], list[int]):
+    def _process_table(
+        header, body
+    ) -> tuple(list[Paragraph], list[list[Paragraph]], list[int]):
         """
         Processes the table inputs to ensure header and body only contain paragraph elements.
         Also, this computes the max width of each row to ensure pretty print works every time.
@@ -982,7 +1040,7 @@ class Table(Element):
     def render(self) -> str:
         """
         Renders a markdown table from a header "list"
-        and a data set. 
+        and a data set.
 
         .. versionchanged:: 0.4.0
             Modified to support column alignment and pipes on both sides of the table
@@ -990,8 +1048,10 @@ class Table(Element):
         :return: a table as a markdown string
         """
         rows = list()
-        header = [str(item).ljust(self._widths[i])
-                  for i, item in enumerate(self._header)]
+        header = [
+            str(item).ljust(self._widths[i])
+            for i, item in enumerate(self._header)
+        ]
         body = [
             [str(item).ljust(self._widths[i]) for i, item in enumerate(row)]
             for row in self._body
@@ -999,7 +1059,8 @@ class Table(Element):
         rows.append(f"| {' | '.join(header)} |")
         if not self._align:
             rows.append(
-                f"| {' | '.join('-' * width for width in self._widths)} |")
+                f"| {' | '.join('-' * width for width in self._widths)} |"
+            )
         else:
             meta = []
             for align, width in zip(self._align, self._widths):
@@ -1011,15 +1072,15 @@ class Table(Element):
                     meta.append(f":{'-' * (width - 2)}:")
             rows.append(f"| {' | '.join(meta)} |")
         rows.extend((f"| {' | '.join(row)} |" for row in body))
-        return '\n'.join(rows)
+        return "\n".join(rows)
 
     def verify(self):
         """
         Verifies the integrity of the markdown table. There are various ways
         a user could instantiate this object improperly. For example, they may
         provide a body with roes that are not all equal width. Likewise, the
-        header may not match the width of the body. InlineText elements may also 
-        be malformed. 
+        header may not match the width of the body. InlineText elements may also
+        be malformed.
 
         .. versionadded:: 0.2.0
 
@@ -1030,7 +1091,8 @@ class Table(Element):
         # Table errors
         if len({len(row) for row in self._body}) != 1:
             verification.add_error(
-                self, "Table body rows are not all the same width.")
+                self, "Table body rows are not all the same width."
+            )
         elif len(self._header) != len(self._body[0]):
             verification.add_error(self, "Header does not match width of body")
 
@@ -1051,11 +1113,11 @@ class Document:
     A document represents a markdown file. Documents store
     a collection of elements which are appended with new lines
     between to generate the markdown document. Document methods
-    are intended to provided convenience when generating a 
+    are intended to provided convenience when generating a
     markdown file. However, the functionality is not exhaustive.
     To get the full range of markdown functionality, you can
     take advantage of the :code:`add_element()` function to provide
-    custom markdown elements. 
+    custom markdown elements.
 
     :param name: the file name of the document without the extension
     """
@@ -1094,16 +1156,16 @@ class Document:
 
     def add_element(self, element: Element) -> Element:
         """
-        A generic function for appending elements to the document. 
+        A generic function for appending elements to the document.
         Use this function when you want a little more control over
-        what the output looks like. 
+        what the output looks like.
 
         .. code-block:: Python
 
             doc.add_element(Header(InlineText("Python is Cool!"), 2))
 
         .. versionchanged:: 0.2.0
-           Returns Element generated by this method instead of None. 
+           Returns Element generated by this method instead of None.
 
         :param Element element: a markdown object (e.g., Table, Header, etc.)
         :return: the Element added to this Document
@@ -1114,7 +1176,7 @@ class Document:
         return element
 
     def add_header(self, text: str, level: int = 1) -> Header:
-        """ 
+        """
         A convenience method which adds a simple header to the document:
 
         .. code-block:: Python
@@ -1122,7 +1184,7 @@ class Document:
             doc.add_header("Welcome to SnakeMD!")
 
         .. versionchanged:: 0.2.0
-           Returns Header generated by this method instead of None. 
+           Returns Header generated by this method instead of None.
 
         :param str text: the text for the header
         :param int level: the level of the header from 1 to 6
@@ -1143,7 +1205,7 @@ class Document:
             doc.add_paragraph("Mitochondria is the powerhouse of the cell.")
 
         .. versionchanged:: 0.2.0
-           Returns Paragraph generated by this method instead of None. 
+           Returns Paragraph generated by this method instead of None.
 
         :param str text: any arbitrary text
         :return: the Paragraph added to this Document
@@ -1155,14 +1217,14 @@ class Document:
 
     def add_ordered_list(self, items: Iterable[str]) -> MDList:
         """
-        A convenience method which adds a simple ordered list to the document: 
+        A convenience method which adds a simple ordered list to the document:
 
         .. code-block:: Python
 
             doc.add_ordered_list(["Goku", "Piccolo", "Vegeta"])
 
         .. versionchanged:: 0.2.0
-           Returns MDList generated by this method instead of None. 
+           Returns MDList generated by this method instead of None.
 
         :param Iterable[str] items: a "list" of strings
         :return: the MDList added to this Document
@@ -1174,14 +1236,14 @@ class Document:
 
     def add_unordered_list(self, items: Iterable[str]) -> MDList:
         """
-        A convenience method which adds a simple unordered list to the document. 
+        A convenience method which adds a simple unordered list to the document.
 
         .. code-block:: Python
 
             doc.add_unordered_list(["Deku", "Bakugo", "Kirishima"])
 
         .. versionchanged:: 0.2.0
-           Returns MDList generated by this method instead of None. 
+           Returns MDList generated by this method instead of None.
 
         :param Iterable[str] items: a "list" of strings
         :return: the MDList added to this Document
@@ -1193,7 +1255,7 @@ class Document:
 
     def add_checklist(self, items: Iterable[str]) -> MDCheckList:
         """
-        A convenience method which adds a simple checklist to the document. 
+        A convenience method which adds a simple checklist to the document.
 
         .. code-block:: Python
 
@@ -1204,7 +1266,9 @@ class Document:
         :param Iterable[str] items: a "list" of strings
         :return: the MDCheckList added to this Document
         """
-        md_checklist = MDCheckList([InlineText(item) for item in items], checked=False)
+        md_checklist = MDCheckList(
+            [InlineText(item) for item in items], checked=False
+        )
         self._contents.append(md_checklist)
         logger.debug(f"Added checklist to document\n{md_checklist}")
         return md_checklist
@@ -1213,7 +1277,7 @@ class Document:
         self,
         header: Iterable[str],
         data: Iterable[Iterable[str]],
-        align: Iterable[Table.Align] = None
+        align: Iterable[Table.Align] = None,
     ) -> Table:
         """
         A convenience method which adds a simple table to the document:
@@ -1230,7 +1294,7 @@ class Document:
             )
 
         .. versionchanged:: 0.2.0
-            Returns Table generated by this method instead of None. 
+            Returns Table generated by this method instead of None.
         .. versionchanged:: 0.4.0
             Added optional alignment parameter
 
@@ -1247,7 +1311,9 @@ class Document:
         logger.debug(f"Added table to document\n{table}")
         return table
 
-    def add_code(self, code: str, lang: str = "generic") -> Paragraph:
+    def add_code(
+        self, code: str, lang: str = "generic", indent: bool = False
+    ) -> Paragraph:
         """
         A convenience method which adds a code block to the document:
 
@@ -1262,7 +1328,9 @@ class Document:
         :param str lang: the language for syntax highlighting
         :return: the Paragraph added to this Document
         """
-        code = Paragraph([InlineText(code)], code=True, lang=lang)
+        code = Paragraph(
+            [InlineText(code)], code=True, lang=lang, indented_code=indent
+        )
         self._contents.append(code)
         logger.debug(f"Added code block to document\n{code}")
         return code
@@ -1276,7 +1344,7 @@ class Document:
             doc.add_quote("Welcome to the Internet!")
 
         .. versionchanged:: 0.2.0
-           Returns Paragraph generated by this method instead of None. 
+           Returns Paragraph generated by this method instead of None.
 
         :param str text: the text to be quoted
         :return: the Paragraph added to this Document
@@ -1303,13 +1371,15 @@ class Document:
         logger.debug(f"Added code block to document\n{hr}")
         return hr
 
-    def add_table_of_contents(self, levels: range = range(2, 3)) -> TableOfContents:
+    def add_table_of_contents(
+        self, levels: range = range(2, 3)
+    ) -> TableOfContents:
         """
         A convenience method which creates a table of contents. This function
         can be called where you want to add a table of contents to your
         document. The table itself is lazy loaded, so it always captures
         all of the header elements regardless of where the table of contents
-        is added to the document. 
+        is added to the document.
 
         .. code-block:: Python
 
@@ -1327,12 +1397,13 @@ class Document:
         toc = TableOfContents(self, levels=levels)
         self._contents.append(toc)
         logger.debug(
-            f"Added code block to document (unable to render until file is complete)")
+            f"Added code block to document (unable to render until file is complete)"
+        )
         return toc
 
     def scramble(self) -> None:
         """
-        A silly method which mixes all of the elements in this document in 
+        A silly method which mixes all of the elements in this document in
         a random order.
         """
         random.shuffle(self._contents)
@@ -1346,7 +1417,11 @@ class Document:
         :param str encoding: the encoding to use
         """
         pathlib.Path(dump_dir).mkdir(parents=True, exist_ok=True)
-        output_file = open(os.path.join(dump_dir, self._get_file_name()), "w+", encoding=encoding)
+        output_file = open(
+            os.path.join(dump_dir, self._get_file_name()),
+            "w+",
+            encoding=encoding,
+        )
         output_file.write(str(self))
         output_file.close()
 
